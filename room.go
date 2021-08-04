@@ -17,6 +17,10 @@ func (d Date) After(other Date) bool {
 	return d.time.After(other.time)
 }
 
+func (d Date) Equal(other Date) bool {
+	return d.time.Equal(other.time)
+}
+
 func NewDate(year int, month time.Month, day int) Date {
 	loc, _ := time.LoadLocation("UTC")
 	return Date{time: time.Date(year, month, day, 0, 0, 0, 0, loc)}
@@ -54,15 +58,20 @@ func (h *Hotel) BookARoom(booking Booking) error {
 	return errors.New("Room not found")
 }
 
-func (h Hotel) GetFreeRooms(arrival Date, departure Date) []Room {
-	// check if existing booking affects availability
-	// if yes, remove room
+func (h Hotel) getBookedRooms(arrival Date, departure Date) []Room {
 	bookedRooms := make([]Room, 0)
 	for _, booking := range h.bookings {
-		if booking.arrival.Before(arrival) && booking.departure.After(arrival) {
+		if (booking.arrival.Before(arrival) || booking.arrival.Equal(arrival)) && booking.departure.After(arrival) {
 			bookedRooms = append(bookedRooms, booking.room)
 		}
 	}
+	return bookedRooms
+}
+
+func (h Hotel) GetFreeRooms(arrival Date, departure Date) []Room {
+	// check if existing booking affects availability
+	// if yes, remove room
+	bookedRooms := h.getBookedRooms(arrival, departure)
 	availableRooms := make([]Room, 0)
 	for _, room := range h.rooms {
 		// check if inside of bookedRooms
