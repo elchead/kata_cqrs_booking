@@ -27,11 +27,6 @@ func NewDate(year int, month time.Month, day int) Date {
 }
 
 type Room string
-
-func GetFreeRooms(arrival Date, departure Date) []Room {
-	return []Room{"Rio", "Berlin"}
-}
-
 type Booking struct {
 	id        int
 	room      Room

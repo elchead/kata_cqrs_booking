@@ -11,7 +11,8 @@ func TestShowFreeRooms(t *testing.T) {
 	rooms := []Room{"Rio", "Berlin"}
 	arrival := NewDate(2020, time.August, 13)
 	departure := NewDate(2020, time.August, 16)
-	availableRooms := GetFreeRooms(arrival, departure)
+	hotel := NewHotel(rooms)
+	availableRooms := hotel.GetFreeRooms(arrival, departure)
 	assert.Equal(t, rooms, availableRooms)
 
 }
