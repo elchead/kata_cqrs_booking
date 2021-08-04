@@ -1,14 +1,25 @@
 package room
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type Date struct {
-	date time.Time
+	time time.Time
+}
+
+func (d Date) Before(other Date) bool {
+	return d.time.Before(other.time)
+}
+
+func (d Date) After(other Date) bool {
+	return d.time.After(other.time)
 }
 
 func NewDate(year int, month time.Month, day int) Date {
 	loc, _ := time.LoadLocation("UTC")
-	return Date{date: time.Date(year, month, day, 0, 0, 0, 0, loc)}
+	return Date{time: time.Date(year, month, day, 0, 0, 0, 0, loc)}
 }
 
 type Room string
@@ -19,18 +30,52 @@ func GetFreeRooms(arrival Date, departure Date) []Room {
 
 type Booking struct {
 	id        int
-	name      string
+	room      Room
 	arrival   Date
 	departure Date
 }
 type Hotel struct {
-	rooms []Room
+	rooms    []Room
+	bookings []Booking
 }
 
-func (h Hotel) BookARoom(booking Booking) error {
-	return nil
+func NewHotel(rooms []Room) Hotel {
+	return Hotel{rooms: rooms}
+}
+
+func (h *Hotel) BookARoom(booking Booking) error {
+	availableRooms := h.GetFreeRooms(booking.arrival, booking.departure)
+	for _, room := range availableRooms {
+		if room == booking.room {
+			h.bookings = append(h.bookings, booking)
+			return nil
+		}
+	}
+	return errors.New("Room not found")
 }
 
 func (h Hotel) GetFreeRooms(arrival Date, departure Date) []Room {
-	return []Room{"Rio"}
+	// check if existing booking affects availability
+	// if yes, remove room
+	bookedRooms := make([]Room, 0)
+	for _, booking := range h.bookings {
+		if booking.arrival.Before(arrival) && booking.departure.After(arrival) {
+			bookedRooms = append(bookedRooms, booking.room)
+		}
+	}
+	availableRooms := make([]Room, 0)
+	for _, room := range h.rooms {
+		// check if inside of bookedRooms
+		booked := false
+		for _, bookedRoom := range bookedRooms {
+			if room == bookedRoom {
+				booked = true
+				break
+			}
+		}
+		if !booked {
+			availableRooms = append(availableRooms, room)
+		}
+	}
+	return availableRooms
 }
