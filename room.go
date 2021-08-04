@@ -55,7 +55,7 @@ func (h *Hotel) BookARoom(booking Booking) error {
 			return nil
 		}
 	}
-	return errors.New("Room not found")
+	return errors.New("Room not available")
 }
 
 func (h Hotel) getBookedRooms(arrival Date, departure Date) []Room {
@@ -69,8 +69,6 @@ func (h Hotel) getBookedRooms(arrival Date, departure Date) []Room {
 }
 
 func (h Hotel) GetFreeRooms(arrival Date, departure Date) []Room {
-	// check if existing booking affects availability
-	// if yes, remove room
 	bookedRooms := h.getBookedRooms(arrival, departure)
 	availableRooms := make([]Room, 0)
 	for _, room := range h.rooms {

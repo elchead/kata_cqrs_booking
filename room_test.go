@@ -26,8 +26,19 @@ func TestBookRoom(t *testing.T) {
 	err := hotel.BookARoom(booking)
 	assert.NoError(t, err)
 	assert.Equal(t, []Booking{booking}, hotel.bookings)
-	// 	availableRooms := hotel.GetFreeRooms(arrival, departure)
-	// 	assert.Equal(t, []Room{"Rio"}, availableRooms)
+}
+
+func TestNoDoubleBooking(t *testing.T) {
+	arrival := NewDate(2020, time.September, 8)
+	departure := NewDate(2020, time.September, 11)
+	booking := Booking{id: 0, room: "Berlin", arrival: arrival, departure: departure}
+
+	rooms := []Room{"Rio", "Berlin"}
+	hotel := NewHotel(rooms)
+	err := hotel.BookARoom(booking)
+	assert.NoError(t, err)
+	err = hotel.BookARoom(booking)
+	assert.Error(t, err)
 }
 
 func TestFailBookRoom(t *testing.T) {
