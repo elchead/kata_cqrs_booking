@@ -63,19 +63,20 @@ func (h Hotel) getBookedRooms(arrival Date, departure Date) []Room {
 	return bookedRooms
 }
 
+func findRoom(room Room, rooms []Room) bool {
+	for _, r := range rooms {
+		if room == r {
+			return true
+		}
+	}
+	return false
+}
+
 func (h Hotel) GetFreeRooms(arrival Date, departure Date) []Room {
 	bookedRooms := h.getBookedRooms(arrival, departure)
 	availableRooms := make([]Room, 0)
 	for _, room := range h.rooms {
-		// check if inside of bookedRooms
-		booked := false
-		for _, bookedRoom := range bookedRooms {
-			if room == bookedRoom {
-				booked = true
-				break
-			}
-		}
-		if !booked {
+		if !findRoom(room, bookedRooms) {
 			availableRooms = append(availableRooms, room)
 		}
 	}
