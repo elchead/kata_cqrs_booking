@@ -25,6 +25,10 @@ func (d Date) AddDate(years int, months int, days int) Date {
 	return Date{time: d.time.AddDate(years, months, days)}
 }
 
+func (d Date) IsBetween(start Date, end Date) bool {
+	return (d.After(start) || d.Equal(start)) && (d.Before(end) || d.Equal(end))
+}
+
 func NewDate(year int, month time.Month, day int) Date {
 	loc, _ := time.LoadLocation("UTC")
 	return Date{time: time.Date(year, month, day, 0, 0, 0, 0, loc)}
@@ -60,8 +64,7 @@ func (h *Hotel) BookARoom(booking Booking) error {
 func (h Hotel) getBookedRooms(arrival Date, departure Date) []Room {
 	bookedRooms := make([]Room, 0)
 	for _, booking := range h.bookings {
-		// if (booking.arrival.Before(arrival) || booking.arrival.Equal(arrival)) && departure.Before(booking.departure) {
-		if (booking.arrival.Before(arrival) || booking.arrival.Equal(arrival)) && booking.departure.After(arrival) {
+		if booking.arrival.IsBetween(arrival, departure) || booking.departure.IsBetween(arrival, departure) {
 			bookedRooms = append(bookedRooms, booking.room)
 		}
 	}

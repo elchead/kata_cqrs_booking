@@ -94,3 +94,15 @@ func TestGetBookedRoom(t *testing.T) {
 	assert.Equal(t, []Room{"Berlin"}, hotel.getBookedRooms(arrival, departure))
 
 }
+
+func TestIsDateBetween(t *testing.T) {
+	start := NewDate(2020, time.January, 2)
+	end := NewDate(2020, time.January, 25)
+	isBetween := NewDate(2020, time.January, 15).IsBetween(start, end)
+	assert.Equal(t, isBetween, true)
+
+	isNotBetween := NewDate(2020, time.January, 1).IsBetween(start, end)
+	assert.Equal(t, isNotBetween, false)
+	isBetween = NewDate(2020, time.January, 25).IsBetween(start, end)
+	assert.Equal(t, isBetween, true)
+}
