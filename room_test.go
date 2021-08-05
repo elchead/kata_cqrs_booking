@@ -28,6 +28,15 @@ func (suite *BookingTests) TestShowFreeRooms(t *testing.T) {
 	assert.Equal(t, suite.rooms, availableRooms)
 }
 
+func (suite *BookingTests) TestDontShowBookedRoom(t *testing.T) {
+	booking := Booking{id: 0, room: "Berlin", arrival: suite.arrival, departure: suite.departure}
+
+	err := suite.hotel.BookARoom(booking)
+	assert.NoError(t, err)
+	availableRooms := suite.hotel.GetFreeRooms(suite.arrival, suite.departure)
+	assert.Equal(t, []Room{"Rio"}, availableRooms)
+}
+
 func (suite *BookingTests) TestBookRoom(t *testing.T) {
 	booking := Booking{id: 0, room: "Berlin", arrival: suite.arrival, departure: suite.departure}
 	err := suite.hotel.BookARoom(booking)
@@ -61,15 +70,6 @@ func (setup *BookingTests) TestFailBookingInvalidRoom(t *testing.T) {
 	booking := Booking{id: 0, room: "Amsterdam", arrival: setup.arrival, departure: setup.departure}
 	err := setup.hotel.BookARoom(booking)
 	assert.Error(t, err)
-}
-
-func (suite *BookingTests) TestBookAndShowFreeRooms(t *testing.T) {
-	booking := Booking{id: 0, room: "Berlin", arrival: suite.arrival, departure: suite.departure}
-
-	err := suite.hotel.BookARoom(booking)
-	assert.NoError(t, err)
-	availableRooms := suite.hotel.GetFreeRooms(suite.arrival, suite.departure)
-	assert.Equal(t, []Room{"Rio"}, availableRooms)
 }
 
 func (suite *BookingTests) TestUnaffectedBookingAndFreeRooms(t *testing.T) {
